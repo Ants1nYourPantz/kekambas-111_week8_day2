@@ -1,50 +1,52 @@
 import React, { useEffect, useState } from 'react';
 
 export default function PokeAPI() {
-
-  const [name, setName] = useState();
-  const [height, setHeight] = useState();
-  const [weight, setWeight] = useState();
-
+  const [name, setName] = useState(null);
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
 
   useEffect(() => {
-    console.log("Hello Effect")
+    if (!name) {
+      return;
+    }
     fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
       .then(res => res.json())
       .then(data => {
-        console.log(data);
-        const pokeHeight = data.height
-        const pokeWeight = data.weight
-        setName(pokeHeight, pokeWeight);
+        setHeight(data.height);
+        setWeight(data.weight);
       })
+      .catch(err => console.error(err));
   }, [name]);
 
   const handleFormSubmit = event => {
     event.preventDefault();
-    let name = event.target.name.value;
+    const form = event.target;
+    const name = form.pokemon.value;
     setName(name);
-    // event.target.name.value = '';
+    form.reset();
   }
 
   return (
     <div>
-        <h1 className='text-center'>PokeAPI</h1>
+      <h1 className='text-center'>PokeAPI</h1>
 
-        <form action="" className='row' onSubmit={handleFormSubmit}>
-          <div className='col-8'>
-            <input type="text" className="text form-control" name='pokemon' />
-          </div>
-          <div className='col'>
-            <input type="submit" value='Search' className='btn btn-dark w-100'/>
-          </div>
-        </form>
+      <form className='row' onSubmit={handleFormSubmit}>
+        <div className='col-8'>
+          <input type='text' className='text form-control' name='pokemon' />
+        </div>
+        <div className='col'>
+          <input type='submit' value='Search' className='btn btn-dark w-100'/>
+        </div>
+      </form>
 
-        <div class="card text-left">
-          <div class="card-body">
-            <h4 class="card-title">{name}</h4>
-            <p class="card-text">Height: {height} Weight: {weight}</p>
+      {name && (
+        <div className='card text-left'>
+          <div className='card-body'>
+            <h4 className='card-title'>{name}</h4>
+            <p className='card-text'>Height: {height} Weight: {weight}</p>
           </div>
         </div>
+      )}
     </div>
   )
 }
